@@ -59,3 +59,59 @@ select to_char(creation_time, 'RRRR-MON') "Month",
 sum(bytes)/1024/1024 "MB"
 from v$datafile
 group by to_char(creation_time, 'RRRR-MON') order by 1;
+
+~~~
+
+#### Archivers size
+~~~
+col day format a15;
+col hour format a4;
+col total format 999;
+
+select 
+to_char(first_time,'yyyy-mm-dd') day,
+to_char(first_time,'hh24') hour,
+count(*) total, (count(*)*62914560)/1024/1024 MB_archive -- 62914560 = redo log file size in bytes
+from v$log_history
+group by to_char(first_time,'yyyy-mm-dd'),to_char(first_time,'hh24')
+order by to_char(first_time,'yyyy-mm-dd'),to_char(first_time,'hh24') asc;
+
+~~~
+
+#### Archivers number, no redo log size needed
+~~~
+set lines 120; 
+set pages 999; 
+SELECT 
+to_char(first_time,'YYYY-MON-DD') day,
+to_char(sum(decode(to_char(first_time,'HH24'),'00',1,0)),'999') "00",
+to_char(sum(decode(to_char(first_time,'HH24'),'01',1,0)),'999') "01",
+to_char(sum(decode(to_char(first_time,'HH24'),'02',1,0)),'999') "02",
+to_char(sum(decode(to_char(first_time,'HH24'),'03',1,0)),'999') "03",
+to_char(sum(decode(to_char(first_time,'HH24'),'04',1,0)),'999') "04",
+to_char(sum(decode(to_char(first_time,'HH24'),'05',1,0)),'999') "05",
+to_char(sum(decode(to_char(first_time,'HH24'),'06',1,0)),'999') "06",
+to_char(sum(decode(to_char(first_time,'HH24'),'07',1,0)),'999') "07",
+to_char(sum(decode(to_char(first_time,'HH24'),'08',1,0)),'999') "0",
+to_char(sum(decode(to_char(first_time,'HH24'),'09',1,0)),'999') "09",
+to_char(sum(decode(to_char(first_time,'HH24'),'10',1,0)),'999') "10",
+to_char(sum(decode(to_char(first_time,'HH24'),'11',1,0)),'999') "11",
+to_char(sum(decode(to_char(first_time,'HH24'),'12',1,0)),'999') "12",
+to_char(sum(decode(to_char(first_time,'HH24'),'13',1,0)),'999') "13",
+to_char(sum(decode(to_char(first_time,'HH24'),'14',1,0)),'999') "14",
+to_char(sum(decode(to_char(first_time,'HH24'),'15',1,0)),'999') "15",
+to_char(sum(decode(to_char(first_time,'HH24'),'16',1,0)),'999') "16",
+to_char(sum(decode(to_char(first_time,'HH24'),'17',1,0)),'999') "17",
+to_char(sum(decode(to_char(first_time,'HH24'),'18',1,0)),'999') "18",
+to_char(sum(decode(to_char(first_time,'HH24'),'19',1,0)),'999') "19",
+to_char(sum(decode(to_char(first_time,'HH24'),'20',1,0)),'999') "20",
+to_char(sum(decode(to_char(first_time,'HH24'),'21',1,0)),'999') "21",
+to_char(sum(decode(to_char(first_time,'HH24'),'22',1,0)),'999') "22",
+to_char(sum(decode(to_char(first_time,'HH24'),'23',1,0)),'999') "23"
+from
+v$log_history
+GROUP by 
+to_char(first_time,'YYYY-MON-DD')
+order by to_char(first_time,'YYYY-MON-DD');
+
+~~~
