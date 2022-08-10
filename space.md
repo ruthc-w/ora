@@ -52,3 +52,10 @@ SELECT name, free_mb, total_mb, free_mb/total_mb*100 as percentage,usable_file_m
 FROM v$asm_diskgroup;
 
 ~~~
+
+#### DB growth per month
+~~~
+select to_char(creation_time, 'RRRR-MON') "Month",
+sum(bytes)/1024/1024 "MB"
+from v$datafile
+group by to_char(creation_time, 'RRRR-MON') order by 1;
